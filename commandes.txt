@@ -1,0 +1,130 @@
+======================================================================================
+nginx: [ engine x ] est un serveur HTTP et proxy inverse, un serveur proxy de messagerie,
+et un serveur proxy TCP / UDP générique
+
+WordPress: est un système de gestion de contenu (CMS) très apprécié de nos jours.
+En plus d’être open source, le logiciel est pratiquement libre et gratuit.
+Il est facile à utiliser et propose des fonctionnalités intéressantes pour la création
+et la gestion d’un site web.
+
+MariaDB: est un système de gestion de base de données édité sous licence GPL.
+======================================================================================
+
+commandes courrament utilise.
+======================================================================================
+
+Dossier pour connection ssh:
+----------------------------
+- /etc/ssh/sshd_config
+
+Packages a installer:
+---------------------
+- apt install -y sudo ufw docker docker-compose make openbox xinit kitty firefox-esr
+
+close machine:
+--------------
+- shutdown now
+
+Service ufw:
+------------
+-                 ufw status
+- Start service:  ufw enable
+- Open ports:     ufw allow
+
+Service ssh:
+------------
+- ssh <your_nickname>@localhost -p 42
+
+sudo
+----
+- file for sudo /etc/sudoers
+
+Groups
+------
+- See groups for a user:      groups <your_nickname>
+- Add rights for groups:      sudo usermod -aG <servidce> <your_nickname>
+
+git clone https://github.com/codesshaman/simple_docker_nginx_html.git
+
+Docker
+------
+- Lancer container:        docker-compose up -d
+
+Pour le développement local, les certificats d'auto-abonnement sont généralement utilisés.
+Et pour générer un certificat d'abonnement, il est très pratique d'utiliser l'utilitaire mkcert.
+-----------------------------------------------------------------------------------------------
+- sudo apt update -y
+- sudo apt install -y wget curl libnss3-tools
+- curl -s https://api.github.com/repos/FiloSottile/mkcert/releases/latest| grep browser_download_url  | grep linux-amd64 | cut -d '"' -f 4 | wget -qi -
+- Renommez le fichier téléchargé:                           mv mkcert-v*-linux-amd64 mkcert
+- Pour tout les utilisateurs:                               chmod a+x mkcert
+- Enfin, déplacez mkcert dans le répertoire de travail:     sudo mv mkcert /usr/local/bin/
+- mkcert --version
+
+Ensuite, nous devons changer l'alias de notre domaine local ( 127.0.0.1 ) en surnom dont
+nous avons besoin.42.fr.
+----------------------------------------------------------------------------------------------
+- sudo nano /etc/hosts
+- Et ajouter à localhost notre surnom 42.fr
+- Restart container:    cd ~/simple_docker_nginx_html/ && docker-compose up -d
+- sudo startx
+
+- Mettez le certificat et la clé dans le dossier projet:    cd ~/project/srcs/requirements/tools/
+- Obtenir un certificat:     mkcert <your_nickname>.42.fr
+- mv <your_nickname>.42.fr-key.pem <your_nickname>.42.fr.key
+- mv <your_nickname>.42.fr.pem <your_nickname>.42.fr.crt
+
+Modifier les paramètres de nginx et du projet de test pour vérifier le travail de https.
+----------------------------------------------------------------------------------------
+- nano ~/simple_docker_nginx_html/nginx/conf.d/nginx.conf
+
+Stop the container
+------------------
+- cd ~/simple_docker_nginx_html/ && docker-compose down
+
+- nano docker-compose.yml
+change user: - /home/${USER}/project/srcs/requirements/tools:/etc/nginx/ssl
+
+lancez à nouveau notre docker avec l'équipe
+-------------------------------------------
+- docker-compose up -d
+
+
+
+
+======================================================================================
+lunch vscode
+- snap run code
+======================================================================================
+
+======================================================================================
+Start a container.
+----------------------------------------
+Need Dockerfile in folder
+- docker build -t getting-started .
+
+Le docker build la commande utilise le Dockerfile pour construire une nouvelle image de conteneur.
+Vous avez peut-être remarqué que Docker a téléchargé beaucoup de couches “ ”. C'est parce que vous
+avez demandé au constructeur de commencer à partir du node:18-alpine image. Mais, comme vous ne l'aviez
+pas sur votre machine, Docker devait télécharger l'image.
+
+Après que Docker ait téléchargé l'image, les instructions du Dockerfile ont copié dans votre application
+et utilisé yarn pour installer les dépendances de votre application. Le CMD la directive spécifie la commande
+par défaut à exécuter lors du démarrage d'un conteneur à partir de cette image.
+
+Enfin, le -t drapeau tague votre image. Considérez cela simplement comme un nom lisible par l'homme pour
+l'image finale. Depuis que vous avez nommé l'image getting-started, vous pouvez vous référer à cette image
+lorsque vous exécutez un conteneur.
+
+Le . à la fin de la docker build la commande indique à Docker qu'elle doit rechercher Dockerfile
+dans le répertoire courant.
+======================================================================================
+docker run -dp 3000:3000 getting-started
+
+Vous utilisez le -d indicateur pour exécuter le nouveau conteneur en mode “ détaché ” ( en arrière-plan ).
+Vous utilisez également le -p indicateur pour créer une cartographie entre le port hôte 3000 et le port du conteneur 3000.
+Sans la cartographie du port, vous ne pourriez pas accéder à l'application.
+
+Après quelques secondes, ouvrez votre navigateur Web à http://localhost:3000.
+Vous devriez voir votre application.
+======================================================================================
